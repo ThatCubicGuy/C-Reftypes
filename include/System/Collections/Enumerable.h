@@ -22,14 +22,14 @@
  * current enumeration value to a T pointer before
  * dereferencing it into var and executing code.
  */
-#define foreach_as(T, var, source, code) do {           \
-    IEnumerable __src = (IEnumerable)source;            \
-    IEnumerator __e = (__src)->GetEnumerator(__src);    \
-    while (__e->MoveNext(__e)) {                        \
-        T var = *(T*)__e->Current;                      \
-        code;                                           \
-    }                                                   \
-    __e->Dispose(__e);                                  \
+#define foreach_as(T, var, source, code) do {               \
+    IEnumerable __src = as_interface(IEnumerable,source);   \
+    IEnumerator __e = (__src)->GetEnumerator(__src);        \
+    while (__e->MoveNext(__e)) {                            \
+        T var = *(T*)__e->Current;                          \
+        code;                                               \
+    }                                                       \
+    __e->Dispose(__e);                                      \
 } while(0)
 
 public interface (IEnumerator, {
@@ -38,6 +38,21 @@ public interface (IEnumerator, {
     void abstract_method(IEnumerator, Dispose);
     object Current;
 })
+
+typedef struct {
+    _Bool (*MoveNext)(__storage_IEnumerator const* This);
+    void (*Reset)(__storage_IEnumerator const* This);
+    void (*Dispose)(__storage_IEnumerator const* This);
+    object Current;
+} __storage_IEnumerator;
+
+typedef union __interface_IEnumerator {
+    __storage_IEnumerator __this;
+    union {
+        __storage_IEnumerator __impl_IEnumerator;
+        __storage_IEnumerator;
+    };
+} *IEnumerator;
 
 public interface (IEnumerable, {
     IEnumerator abstract_method(IEnumerable, GetEnumerator);

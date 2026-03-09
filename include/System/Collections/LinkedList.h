@@ -27,26 +27,24 @@ define_ctor(LinkedList)();
 /// @param items Array of items.
 /// @return A new LinkedList with elements from the array.
 LinkedList CreateLinkedListFromArray(int itemCount, object items[]);
-#define class_define(TYPE, ...) __VA_ARGS__
-class_define
-(
+
 /// @brief Add an element to the end of the list.
 /// @param list List to add an element to.
 /// @param item Item to add to the end of the list.
-void Add(object item);
+void final_method(LinkedList, Add, object item);
 
 /// @brief Insert an item into the list at the given index.
 /// @param source List to insert the element into.
 /// @param item Item to insert into the list.
 /// @param index Index to insert the item at.
-void Insert(object item, int index);
+void final_method(LinkedList, Insert, object item, int index);
 
 /// @brief Removes all elements from the linked list.
 /// @param source Linked list to clear.
-void Clear();
+void final_method(LinkedList, Clear);
 
 /// @brief Frees up all memory occupied by a linked list.
 /// @param source List to destroy.
-void Destroy();
-)
+void final_method(LinkedList, Destroy);
+
 #endif

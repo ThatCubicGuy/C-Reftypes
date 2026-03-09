@@ -3,7 +3,7 @@ USING+=System/Collections
 
 # Compiler settings
 CC:=gcc
-CFLAGS:=-Wall -Iinclude ${USING:%=-Iinclude/%}
+CFLAGS:=-fms-extensions -std=gnu23 -Wall -Iinclude ${USING:%=-Iinclude/%}
 OUTPUT:=thing.exe
 
 # Folder settings
