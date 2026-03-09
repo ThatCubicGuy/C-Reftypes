@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "Class.h"
+#include "Interface.h"
+#include "Delegate.h"
 
 typedef const char* string;
 typedef const void* object;

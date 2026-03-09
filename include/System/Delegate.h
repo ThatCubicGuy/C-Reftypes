@@ -2,7 +2,7 @@
 #define C_DELEGATES
 #define delegate typedef
 // Defines a function pointer with a given name.
-#define lambda(NAME, ...) (*NAME)(__VA_ARGS__)
+#define lambda(NAME) (*NAME)
 // Defines a function that takes a certain number of parameters and returns a value.
 #define Func(TReturn, ...) __FUNC_SELECT(,##__VA_ARGS__, Func16, Func15, Func14, Func13, Func12, Func11, Func10, Func9, Func8, Func7, Func6, Func5, Func4, Func3, Func2, Func1, Func0)(TReturn,##__VA_ARGS__)
 #define __FUNC_SELECT(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, NAME, ...) NAME
