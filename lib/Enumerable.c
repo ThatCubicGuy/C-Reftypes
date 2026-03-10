@@ -1,11 +1,12 @@
 #include "Enumerable.h"
 #include "Defines.h"
+#include "Macros.h"
 
 #pragma region Helpers
 
 internal abstract_class (Enumerable, {
     implements(IEnumerable);
-})
+}, {})
 
 internal abstract_class (Enumerator, {
     implements(IEnumerator);
@@ -14,11 +15,28 @@ internal abstract_class (Enumerator, {
 internal subclass (CompoundEnumerable, Enumerable, {
     IEnumerable _baseEnumerable;
 })
+define_ctor(CompoundEnumerable)(IEnumerable baseEnumerable)
+{
+    alloc_init(CompoundEnumerable, result) {
+        ._baseEnumerable = baseEnumerable
+    };
+    return result;
+}
 
 internal subclass (CompoundEnumerator, Enumerator, {
     IEnumerator _currentEnumerator;
     IEnumerable _baseEnumerable;
 })
+define_ctor(CompoundEnumerator, GenericName(Func, CompoundEnumerator), IEnumerator, IEnumerable)(bool abstract_method(CompoundEnumerator, moveNext), IEnumerator currentEnumerator, IEnumerable baseEnumerable)
+{
+    alloc_init(CompoundEnumerator, result) {
+        .Dispose = CompoundDispose,
+        .Reset = CompoundReset,
+        ._baseEnumerable = baseEnumerable,
+        ._currentEnumerator = currentEnumerator
+    };
+    return result;
+}
 
 private void CompoundReset(IEnumerator This)
 {
@@ -41,6 +59,16 @@ private void CompoundDispose(IEnumerator This)
 internal subclass (WhereEnumerable, CompoundEnumerable, {
     PredicateFunc* _filter;
 })
+define_ctor(WhereEnumerable)(IEnumerator currentEnumerator, IEnumerable baseEnumerable, Predicate(object))
+{
+    // TODO: some macro to inherit constructors
+    WhereEnumerable result = (WhereEnumerable)memresize(new(CompoundEnumerable)(baseEnumerable),sizeof(storage(WhereEnumerable)));
+    *result = init(WhereEnumerable) {
+        .GetEnumerator = GetWhereEnumerator,
+        ._filter = Func_bool_object
+    };
+    return result;
+}
 
 private bool WhereMoveNext(IEnumerator This)
 {

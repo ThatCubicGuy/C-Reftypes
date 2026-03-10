@@ -1,18 +1,8 @@
 #ifndef DEFINES
 #define DEFINES
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include "Class.h"
-#include "Interface.h"
-#include "Delegate.h"
-#include "Struct.h"
-#include "Tuple.h"
-
-typedef const char* string;
-typedef const void* object;
-typedef unsigned char byte;
+// Defines what a generic form of a symbol would be called with the given type parameters.
+#define GenericName(ROOT, ...) JOIN(_, ROOT, __VA_ARGS__)
 
 #define memalloc(TYPE) ((TYPE*)malloc(sizeof(TYPE)))
 #define memfree(OBJ) free(OBJ)
@@ -25,6 +15,20 @@ typedef unsigned char byte;
 #define public
 #define internal
 #define private static
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "Class.h"
+#include "Interface.h"
+#include "Delegate.h"
+#include "Struct.h"
+#include "Tuple.h"
+#include "Macros.h"
+
+typedef const char* string;
+typedef const void* object;
+typedef unsigned char byte;
 
 void MemCopy(void* dest, const void* source, size_t size);
 

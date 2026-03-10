@@ -1,9 +1,6 @@
 #ifndef C_STRUCTS_ADVANCED
 #define C_STRUCTS_ADVANCED
 
-// Defines the constructor for a type.
-#define define_ctor(TYPE) TYPE TYPE##__ctor
-
 // Defines a new reference type with the given name and definition.
 // A parameterless constructor definition may be added at the end.
 #define struct(NAME, ...) typedef struct __struct_##NAME __VA_ARGS__ NAME;   \

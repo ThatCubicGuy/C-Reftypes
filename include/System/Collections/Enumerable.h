@@ -39,21 +39,6 @@ public interface (IEnumerator, {
     object Current;
 })
 
-typedef struct {
-    _Bool (*MoveNext)(__storage_IEnumerator const* This);
-    void (*Reset)(__storage_IEnumerator const* This);
-    void (*Dispose)(__storage_IEnumerator const* This);
-    object Current;
-} __storage_IEnumerator;
-
-typedef union __interface_IEnumerator {
-    __storage_IEnumerator __this;
-    union {
-        __storage_IEnumerator __impl_IEnumerator;
-        __storage_IEnumerator;
-    };
-} *IEnumerator;
-
 public interface (IEnumerable, {
     IEnumerator abstract_method(IEnumerable, GetEnumerator);
 })

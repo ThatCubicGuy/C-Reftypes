@@ -6,7 +6,7 @@
 
 /// @brief A node inside a linked list.
 public class (LinkedNode, {
-    storage(LinkedNode) *Next;
+    refbase(LinkedNode) *Next;
     object Value;
 })
 
