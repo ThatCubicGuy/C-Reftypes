@@ -8,7 +8,7 @@
 #define implements(INTERFACE) union { storage(INTERFACE) __impl_##INTERFACE; storage(INTERFACE); }
 // Defines a new interface with the given name and definition.
 #define interface(NAME, ...) def_storage(NAME, __VA_ARGS__); \
-typedef refbase(NAME) { implements(NAME); } *NAME;
+typedef union CAT(__internal_union_, __LINE__) { implements(NAME); } refbase(NAME), *NAME;
 
 // Returns the implementation of INTERFACE in obj.
 #define as_interface(INTERFACE, obj) ((INTERFACE)(&(obj)->__impl_##INTERFACE))
