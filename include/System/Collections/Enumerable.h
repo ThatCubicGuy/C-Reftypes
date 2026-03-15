@@ -2,19 +2,20 @@
 #define COLLECTIONS_ENUMERABLE
 
 #include "Defines.h"
-
+#include "Class.h"
+#include "Interface.h"
 /**
  * @brief Enumerates an IEnumerable and sets var to
  * the current enumeration value before executing code.
  */
 #define foreach_ref(T, var, source, code) do {              \
     IEnumerable __src = as_interface(IEnumerable,source);   \
-    IEnumerator __e = (__src)->GetEnumerator(__src);        \
-    while (__e->MoveNext(__e)) {                            \
+    IEnumerator __e = call(__src,GetEnumerator,());         \
+    while (call(__e,MoveNext,())) {                         \
         T var = (T)__e->Current;                            \
         code;                                               \
     }                                                       \
-    __e->Dispose(__e);                                      \
+    call(__e,Dispose,());                                   \
 } while(0)
 
 /**
@@ -24,24 +25,23 @@
  */
 #define foreach_as(T, var, source, code) do {               \
     IEnumerable __src = as_interface(IEnumerable,source);   \
-    IEnumerator __e = (__src)->GetEnumerator(__src);        \
-    while (__e->MoveNext(__e)) {                            \
+    IEnumerator __e = call(__src,GetEnumerator,());         \
+    while (call(__e,MoveNext,())) {                         \
         T var = *(T*)__e->Current;                          \
         code;                                               \
     }                                                       \
-    __e->Dispose(__e);                                      \
+    call(__e,Dispose,());                                   \
 } while(0)
 
 public interface (IEnumerator, {
-    bool abstract_method(IEnumerator, MoveNext);
-    void abstract_method(IEnumerator, Reset);
-    void abstract_method(IEnumerator, Dispose);
     object Current;
 })
+define_vtable_abstract(IEnumerator, (bool,MoveNext,()), (void,Reset,()), (void,Dispose,()))
 
 public interface (IEnumerable, {
-    IEnumerator abstract_method(IEnumerable, GetEnumerator);
+    IEnumerator abstract_method(GetEnumerator,());
 })
+define_vtable_abstract(IEnumerable, (IEnumerator,GetEnumerator,()))
 
 delegate bool PredicateFunc(object);
 
@@ -49,13 +49,13 @@ delegate bool PredicateFunc(object);
 /// @param source Enumerable to filter.
 /// @param filter Condition that the elements must fulfill to be taken from the sequence.
 /// @return A new enumerable.
-IEnumerable Enumerable_Where(IEnumerable source, PredicateFunc* filter);
+IEnumerable static_method(Enumerable, Where, (IEnumerable source, PredicateFunc* filter));
 
 /// @brief Projects a collection into a sequence of (index, element).
 /// @param source Enumerable to project.
 /// @return An enumerable of boxed tuples incorporating
 /// the element's index as Item1 and the element as Item2.
-IEnumerable Enumerable_Index(IEnumerable source);
+IEnumerable static_method(Enumerable, Index, (IEnumerable source));
 
 delegate object SelectorFunc(object);
 
@@ -63,7 +63,7 @@ delegate object SelectorFunc(object);
 /// @param source Enumerable to project.
 /// @param selector Function to apply to each element.
 /// @return A new enumerable.
-IEnumerable Enumerable_Select(IEnumerable source, SelectorFunc* selector);
+IEnumerable static_method(Enumerable, Select, (IEnumerable source, SelectorFunc* selector));
 
 delegate object SelectIndexFunc(object, int);
 
@@ -72,7 +72,7 @@ delegate object SelectIndexFunc(object, int);
 /// @param source Enumerable to project.
 /// @param selector Function to apply to each element.
 /// @return A new enumerable.
-IEnumerable Enumerable_SelectIndex(IEnumerable source, SelectIndexFunc* selector);
+IEnumerable static_method(Enumerable, SelectIndex, (IEnumerable source, SelectIndexFunc* selector));
 
 delegate IEnumerable SelectManyFunc(object);
 
@@ -80,7 +80,7 @@ delegate IEnumerable SelectManyFunc(object);
 /// @param source Source enumerable to project the elements of.
 /// @param selector Selector function for the resulting collection.
 /// @return A new enumerable.
-IEnumerable Enumerable_SelectMany(IEnumerable source, SelectManyFunc* selector);
+IEnumerable static_method(Enumerable, SelectMany, (IEnumerable source, SelectManyFunc* selector));
 
 delegate object AggregateFunc(object, object);
 
@@ -88,82 +88,82 @@ delegate object AggregateFunc(object, object);
 /// @param source Enumerable to aggregate.
 /// @param aggregate Accumulator function to apply.
 /// @return The final accumulation value.
-object Enumerable_Aggregate(IEnumerable source, AggregateFunc* aggregate);
+object static_method(Enumerable, Aggregate, (IEnumerable source, AggregateFunc* aggregate));
 
 /// @brief Determines if any element of a sequence satisfies a condition.
 /// @param source The enumerable to check.
 /// @param predicate Condition to satisfy.
 /// @return True if any element satisfies the condition, false otherwise.
-bool Enumerable_Any(IEnumerable source, PredicateFunc* predicate);
+bool static_method(Enumerable, Any, (IEnumerable source, PredicateFunc* predicate));
 
 /// @brief Determines if all elements of a sequence satisfy a condition.
 /// @param source The enumerable to check.
 /// @param predicate Condition to satisfy.
 /// @return True if all elements satisfy the condition, false otherwise.
-bool Enumerable_All(IEnumerable source, PredicateFunc* predicate);
+bool static_method(Enumerable, All, (IEnumerable source, PredicateFunc* predicate));
 
 /// @brief Returns the first count items from a sequence.
 /// @param source Enumerable to take items from.
 /// @param count Amount of items to take.
 /// @return A new enumerable.
-IEnumerable Enumerable_Take(IEnumerable source, int count);
+IEnumerable static_method(Enumerable, Take, (IEnumerable source, int count));
 
 /// @brief Skips the first count items from a sequence before returning the rest.
 /// @param source Enumerable to skip items from.
 /// @param count Amount of items to skip.
 /// @return A new enumerable.
-IEnumerable Enumerable_Skip(IEnumerable source, int count);
+IEnumerable static_method(Enumerable, Skip, (IEnumerable source, int count));
 
 /// @brief Returns the element at the given zero-based index of the sequence.
 /// @param source Enumerable to extract the element from.
 /// @param index Index of the element.
 /// @return The element at the specified index.
-object Enumerable_ElementAt(IEnumerable source, int index);
+object static_method(Enumerable, ElementAt, (IEnumerable source, int index));
 
 /// @brief Searches for the given element in a sequence and returns the zero-based index of this element.
 /// @param source Enumerable to search in.
 /// @param item Item to search for.
 /// @return The zero-based index of this item in the sequence.
-int Enumerable_IndexOf(IEnumerable source, object item);
+int static_method(Enumerable, IndexOf, (IEnumerable source, object item));
 
 /// @brief Returns the first element of the sequence that satisfies the condition.
 /// @param source Enumerable to search in.
 /// @param predicate Condition to satisfy.
 /// @return The first element that satisfies the predicate.
-object Enumerable_FirstOrDefault(IEnumerable source, PredicateFunc* predicate);
+object static_method(Enumerable, FirstOrDefault, (IEnumerable source, PredicateFunc* predicate));
 
 /// @brief Appends an element to the end of a sequence.
 /// @param source Enumerable to append the item to.
 /// @param item Item to append.
 /// @return A new enumerable.
-IEnumerable Enumerable_Append(IEnumerable source, object item);
+IEnumerable static_method(Enumerable, Append, (IEnumerable source, object item));
 
 /// @brief Prepends an element to the start of a sequence.
 /// @param source Enumerable to prepend the item to.
 /// @param item Item to prepend.
 /// @return A new enumerable.
-IEnumerable Enumerable_Prepend(IEnumerable source, object item);
+IEnumerable static_method(Enumerable, Prepend, (IEnumerable source, object item));
 
 /// @brief Concatenates two sequences.
 /// @param first The first sequence to concatenate.
 /// @param second The second sequence to concatenate.
 /// @return A new enumerable.
-IEnumerable Enumerable_Concat(IEnumerable first, IEnumerable second);
+IEnumerable static_method(Enumerable, Concat, (IEnumerable first, IEnumerable second));
 
 /// @brief Determines whether a sequence contains a specified element.
 /// @param source Enumerable to search in.
 /// @param item Item to search for.
-bool Enumerable_Contains(IEnumerable source, object item);
+bool static_method(Enumerable, Contains, (IEnumerable source, object item));
 
 /// @brief Returns a number that represents the amount of elements in the specified enumerable.
 /// @param source Enumerable whose length to count.
 /// @return A number representing the amount of items in source.
-int Enumerable_Count(IEnumerable source);
+int static_method(Enumerable, Count, (IEnumerable source));
 
 /// @brief Determines whether two sequences are equal by comparing each element individually.
 /// @param first First enumerable to compare.
 /// @param second Second enumerable to compare.
 /// @return True if every element from first is equal to second, false otherwise.
-bool Enumerable_SequenceEqual(IEnumerable first, IEnumerable second);
+bool static_method(Enumerable, SequenceEqual, (IEnumerable first, IEnumerable second));
 
 #endif

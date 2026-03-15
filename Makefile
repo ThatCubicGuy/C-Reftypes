@@ -1,8 +1,12 @@
 USING+=System
 USING+=System/Collections
 
+# Default rule
+
+test: buildtest runtest
+
 # Compiler settings
-CC:=gcc
+CC:=clang
 CFLAGS:=-fms-extensions -std=gnu23 -Wall -Iinclude ${USING:%=-Iinclude/%}
 OUTPUT:=thing.exe
 
@@ -17,8 +21,6 @@ LIBOBJS:=${LIBSRCS:${SRC}/%.c=${BIN}/${SRC}/%.o}
 
 # Tests
 TESTSRCS:=$(wildcard ${TESTS}/*.c)
-
-test: buildtest runtest
 
 buildtest: ${LIBOBJS}
 	${CC} ${CFLAGS} main.c ${TESTSRCS} $(wildcard ${BIN}/${SRC}/*.o) -o ${BIN}/test_${OUTPUT}
@@ -37,6 +39,19 @@ run:
 ${LIBOBJS}: ${BIN}/lib/%.o: ${SRC}/%.c
 	${CC} ${CFLAGS} -c $^ -o $@
 
+
+# Helper for making rules for each file separately.
+SEPARATE_BUILD:=$(wildcard *.c) $(wildcard */*.c) $(wildcard */*/*.c)
+# A "Function" for getting the actual basename of the current rule.
+nameof=$(basename $(notdir ${@}))
+# Making separate files (for testing with uncompilable lib)
+${SEPARATE_BUILD}: %: void
+	${CC} ${CFLAGS} ${@} -o ${BIN}/$(nameof).exe && ${BIN}/$(nameof).exe
+
+void:
+
+# .PHONY: ${SEPARATE_BUILD}
+
 clean:
 	rm -f ${BIN}/*
 
@@ -44,7 +59,11 @@ cleanlib:
 	rm -f ${BIN}/lib/*
 
 debug:
-	echo ${LIBOBJS}
-	echo ${LIBSRCS}
+# 	echo ${LIBOBJS}
+# 	echo ${LIBSRCS}
+	echo $(basename $(notdir ${SEPARATE_BUILD}))
 	mkdir -p ${BIN}
 	mkdir -p ${BIN}/${SRC}
+
+cc:
+	${CC} --version

@@ -1,5 +1,6 @@
 #ifndef CUBE_STRING
 #define CUBE_STRING
+#include "Class.h"
 #include "Defines.h"
 
 /**

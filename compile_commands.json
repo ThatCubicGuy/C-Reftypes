@@ -1,0 +1,21 @@
+[
+  {
+    "arguments": [
+      "/usr/lib64/ccache/clang",
+      "-Wno-microsoft-anon-tag",
+      "-fms-extensions",
+      "-std=gnu23",
+      "-Wall",
+      "-Iinclude",
+      "-Iinclude/System",
+      "-Iinclude/System/Collections",
+      "-c",
+      "-o",
+      "bin/lib/Enumerable.o",
+      "lib/Enumerable.c"
+    ],
+    "directory": "/home/Cubic/repos/c-reftypes",
+    "file": "/home/Cubic/repos/c-reftypes/lib/Enumerable.c",
+    "output": "/home/Cubic/repos/c-reftypes/bin/lib/Enumerable.o"
+  }
+]

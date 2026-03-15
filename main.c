@@ -1,31 +1,26 @@
 #include "tests/all.h"
+#include "Defines.h"
+#include "Class.h"
+public class (Human, {
+    int age;
+})
+public empty_ctor(Human)
 
-#define X(...) X_SELECT(,##__VA_ARGS__, X3, X2, X1, X0)(__VA_ARGS__)
+typedef struct _thing1 {
+    int a, b;
+} thing1;
 
-#define X_SELECT(_0, _1, _2, _3, NAME, ...) NAME
+typedef struct _thing2 {
+    thing1;
+    int c, d;
+} thing2;
 
-#define X0()
-#define X1(a)
-#define X2(a, b)
-#define X3(a, b, c) DECLARE_METHOD(a, b, c)
-typedef union thing_t {
-    union thing_t h;
-    struct {
-        int a, b, c;
-    };
-    int v[3];
-} thing;
-typedef union __interface_IEnumerator { union __interface_IEnumerator __impl_IEnumerator;
-    struct {
-        int (*MoveNext)(struct __storage_IEnumerator const* This);
-        void (*Reset)(struct __storage_IEnumerator const* This);
-        void (*Dispose)(struct __storage_IEnumerator const* This);
-        int Current;
-    };
-} *IEnumerator;
 int main(void)
 {
-    union thing_t a;
-    // Func(int, int, char);
-    test_big_ass_struct();
+    thing2 waaa = (thing2) {
+        .a = 2,
+        .a = 3
+    };
+    printf("Numbers are %d %d %d %d", waaa.a, waaa.b, waaa.c, waaa.d);
+    // test_big_ass_struct();
 }

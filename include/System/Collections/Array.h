@@ -2,6 +2,7 @@
 #define COLLECTIONS_ARRAY
 #include "Defines.h"
 #include "Enumerable.h"
+#include "Class.h"
 
 #pragma region Defines
 
@@ -19,22 +20,22 @@ public class (Array, {
 
 define_ctor(Array)(int memberSize, int maxLength);
 
-void Array_Clear(Array source);
+void method_sig(Array, Clear, ());
 
-void Array_CopyTo(Array source, Array dest);
+void method_sig(Array, CopyTo, (Array dest));
 
-void Array_Destroy(Array* source);
+void method_sig(Array, Destroy, ());
 
-void Array_Fill(Array source, object itemRef);
+void method_sig(Array, Fill, (object itemRef));
 
 /**
  * @brief Returns a reference to the given element in the array.
  * @param source Array to get the item from.
  * @param index Index of the item to get.
  */
-object Array_Get(Array source, int index);
+object method_sig(Array, Get, (int index));
 
-void Array_Resize(Array source, int newMaxLength);
+void method_sig(Array, Resize, (int newMaxLength));
 
 /**
  * @brief Sets the value at the index to the value at the given reference.
@@ -42,11 +43,9 @@ void Array_Resize(Array source, int newMaxLength);
  * @param index Index at which to set the item.
  * @param valueRef Reference to the value which should be set.
  */
-void Array_Set(Array source, int index, object valueRef);
+void method_sig(Array, Set, (int index, object valueRef));
 
-delegate Comparer(object, object);
-
-void Array_Sort(Array source, Comparer_object_object comparer);
+void method_sig(Array, Sort, (Comparer(object, object)));
 
 #pragma region Generics
 
@@ -96,7 +95,7 @@ DEF_ENUMERABLE_TO_ARRAY(T)
 
 #pragma region Implement
 
-IEnumerator ArrayGetEnumerator(IEnumerable This);
+IEnumerator ArrayGetEnumerator(IEnumerable this);
 
 #define ARRAY_IMPLEMENT(T)                                                      \
 Array Array_##T##__ctor(int maxLength)                                          \
