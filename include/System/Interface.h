@@ -47,19 +47,19 @@ VTABLE INIT:
 */
 
 #define DEFINE_INTERFACE(ID)                            \
-typedef struct CAT(__interface_##ID##_line_,__LINE__) { \
-    const vtable(ID)* const VTable;                     \
+typedef struct JOIN(_,__interface,ID,line,__LINE__) {   \
+    const struct vtable(ID)* const __VTable;            \
 } refbase(ID), *ID;
 
-
 // Defines a new interface with the given name and definition.
-#define interface(NAME, METHOD_BUNDLES...)  \
-DEFINE_VTABLE(ID, METHOD_BUNDLES)           \
-DEFINE_INTERFACE(ID)
+#define interface(ID, METHOD_BUNDLES...)    \
+struct vtable(ID);                          \
+DEFINE_INTERFACE(ID)                        \
+DEFINE_VTABLE(ID,, METHOD_BUNDLES)
 
 // Returns the implementation of INTERFACE in obj.
 #define as_interface(INTERFACE, obj) ((INTERFACE)(&(obj)->impl(INTERFACE)))
 
-#define as_inheritor(INTERFACE, CURRENT_TYPE, obj) ((INTERFACE)((object)(obj) - offset_of(impl(CURRENT_TYPE), (INTERFACE)(obj))))
+#define as_inheritor(INHERITOR, CURRENT_TYPE, obj) ((INHERITOR)((object)(obj) - offset_of(impl(CURRENT_TYPE), (INHERITOR)(obj))))
 
 #endif

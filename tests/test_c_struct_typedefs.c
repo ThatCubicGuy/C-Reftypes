@@ -1,5 +1,5 @@
 #include <stdio.h>
-struct _base;
+
 typedef struct _base smth1, *smth2;
 
 struct _base {

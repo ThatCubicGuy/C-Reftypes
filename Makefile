@@ -7,7 +7,7 @@ test: buildtest runtest
 
 # Compiler settings
 CC:=clang
-CFLAGS:=-fms-extensions -std=gnu23 -Wall -Iinclude ${USING:%=-Iinclude/%}
+CFLAGS:=-Wno-microsoft-anon-tag -fms-extensions -std=gnu23 -Wall -Iinclude ${USING:%=-Iinclude/%}
 OUTPUT:=thing.exe
 
 # Folder settings

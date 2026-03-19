@@ -2,8 +2,8 @@
 #define C_VTABLES
 #include "Macros.h"
 
-// Returns the type name of REFTYPE's VTable.
-#define vtable(REFTYPE) __vtable_##REFTYPE
+// Represents the type of REFTYPE's VTable, without the `struct` qualifier.
+#define vtable(REFTYPE) vtable_##REFTYPE
 
 // WARNING: obj parameter is used twice.
 #define call(obj, METHOD_NAME, ARGS) (obj)->__VTable->METHOD_NAME(DEPAREN(PREPEND(obj,ARGS)))
@@ -11,12 +11,20 @@
 // Represents the self parameter in any non-static method.
 #define This(TYPE) TYPE const this
 
-#define __TO_FIELD(TYPE, RETURN, NAME, ARGS) RETURN (*NAME)PREPEND(This(void*),ARGS);
-#define __TO_SIG(TYPE, RETURN, NAME, ARGS) RETURN TYPE##_##NAME PREPEND(This(TYPE),ARGS)
+// Transforms a method bundle into a field to be placed inside the VTable definition.
+#define __TO_FIELD(TYPE, RETURN, NAME, ARGS) RETURN (*NAME)PREPEND(This(TYPE),ARGS);
+// Transforms a method bundle into its signature. Static (private).
+#define __TO_SIG(TYPE, RETURN, NAME, ARGS) static RETURN NAME PREPEND(This(TYPE),ARGS)
+// Transforms a method bundle into its signature with a semicolon at the end. Static (private).
 #define __TO_DECL(TYPE, RETURN, NAME, ARGS) __TO_SIG(TYPE, RETURN, NAME, ARGS);
-#define __TO_INIT(TYPE, RETURN, NAME, ARGS) .NAME = (void*)TYPE##_##NAME,
-#define __TO_VTABLE(IMPL) union { vtable(IMPL) __impl##IMPL; vtable(IMPL); };
-#define __INIT_VTABLE(BASE, IMPL) const vtable(IMPL) BASE##_##IMPL##_VTable = *(vtable(IMPL)*)&BASE##_VTable.__impl##IMPL;
+// Transforms a method bundle into an initializer member to be placed inside the VTable initializer.
+#define __TO_INIT(TYPE, RETURN, NAME, ARGS) .NAME = NAME,
+// Transforms a method bundle into an initializer member to be placed inside the VTable initializer.
+#define __TO_IMPL_INIT(IMPL) .__impl_##IMPL = IMPL##_VTable,
+// Generates the VTable of implementations of the class.
+#define __TO_VTABLE(IMPL) extern const struct vtable(IMPL) IMPL##_VTable;
+// Declares the VTable of BASE's implementation of IMPL.
+#define __INIT_VTABLE(BASE, IMPL, IMPL_BUNDLES...) static const struct vtable(IMPL) IMPL##_VTable = (vtable(IMPL))
 
 /*
 The theory:
@@ -47,19 +55,22 @@ The theory:
 */
 
 // Defines a VTable that implements the given types. Base class must come first.
-#define DEFINE_VTABLES(ID, IMPLEMENTS, METHOD_BUNDLES...)\
-typedef struct CAT(__vtable_, ID, _line_, __LINE__) {   \
-    FOREACH(__TO_VTABLE, DEPAREN(IMPLEMENTS))           \
+#define DEFINE_VTABLE(ID, IMPLEMENTS, METHOD_BUNDLES...)\
+struct vtable(ID) {                                     \
     FOREACH_WITH_ARGS(__TO_FIELD, ID, METHOD_BUNDLES)   \
-} vtable(ID);                                           \
-FOREACH_WITH_ARGS(__DEFINE_IMPL,ID,DEPAREN(IMPLEMENTS))
-
-#define INIT_VTABLE(ID, IMPLEMENTS, METHOD_BUNDLES...)  \
-FOREACH_WITH_ARGS(__TO_DECL, ID, METHOD_BUNDLES)        \
-const vtable(ID) ID##_VTable = (vtable(ID)) {           \
-    FOREACH_WITH_ARGS(__TO_INIT, ID, METHOD_BUNDLES)    \
 };
 
-#define implement_vtable(TYPE, METHOD_BUNDLE) EVAL(DEFER(__TO_SIG)(TYPE,DEPAREN(METHOD_BUNDLE)))
+#define INIT_VTABLE(ID, IMPLEMENTS, METHOD_BUNDLES...)              \
+FOREACH(__TO_VTABLE, DEPAREN(IMPLEMENTS))                           \
+FOREACH_WITH_ARGS(__TO_DECL, ID, METHOD_BUNDLES)                    \
+static const struct vtable(ID) ID##_VTable = (struct vtable(ID)) {  \
+    FOREACH_WITH_ARGS(__TO_INIT, ID, METHOD_BUNDLES)                \
+};
+
+// Implement the full VTable of an inherited interface for a given type.
+#define impl_for(BASE, IMPL) static const struct vtable(IMPL) IMPL##_VTable = (struct vtable(IMPL))
+
+// Implement a method bundle of a given type.
+#define impl_method(TYPE, METHOD_BUNDLE) EVAL(DEFER(__TO_SIG)(TYPE, DEPAREN(METHOD_BUNDLE)))
 
 #endif

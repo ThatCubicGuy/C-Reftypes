@@ -14,7 +14,7 @@ extern const string string_Empty;
  * @return A new string with characters from the other.
  * @pure
  */
-define_ctor(string)(string other);
+primary_ctor(string)(string other);
 
 /**
  * @brief Gets the length of the given string.
